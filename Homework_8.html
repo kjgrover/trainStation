@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Bootstrap File -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    
   <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
-   
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery.js"></script>
      
@@ -36,18 +34,13 @@
     color: whitesmoke
   }
   
-  
-
- 
   </style>
    
 </head>
    
 <body class="ground">
-    
   
   <div class="container">
-    
     
     <div class="rounded">
     <div class="jumbotron">
@@ -57,11 +50,7 @@
       </h1>
     </div>
     </div>
-    
   
-
-
-
     <hr>
     
     <h1 class="text-center">
@@ -78,20 +67,9 @@
               </tr>
             </thead>
             <tbody class = appendData>
-                <!-- <tr>
-                    <td>Kelsey</td>
-                    <td>Engineer</td>
-                    <td>06/01/2018</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                  </tr> -->
-                  
-         
             </tbody>
           </table>
     </h1>
-
 
     <h1 class="text-center"></h1>
     <form id = "data form">
@@ -119,11 +97,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
     
-
-  
-
-    
-  var config = {
+ var config = {
     apiKey: "AIzaSyBTN4ZrT9VjsCrMfC4-gCNfZwnxqpFrqzY",
     authDomain: "kelsey-s-first-project.firebaseapp.com",
     databaseURL: "https://kelsey-s-first-project.firebaseio.com",
@@ -132,11 +106,9 @@
     messagingSenderId: "847945600370"
   };
 
-
 firebase.initializeApp(config);
 
 var database = firebase.database();
-
 var name = "";
 var role = "";
 var start = 0;
@@ -144,23 +116,20 @@ var rate = 0;
 
 $("#add-data").on("click", function(event) {
 
-           event.preventDefault();
+  event.preventDefault();
 
-name = $("#EmployeeName").val().trim();
-role = $("#employeeRole").val().trim();
-start = $("#employeeStart").val().trim();
-console.log(start)
-rate = $("#employeeRate").val().trim();
-
-database.ref().push({
+    name = $("#EmployeeName").val().trim();
+    role = $("#employeeRole").val().trim();
+    start = $("#employeeStart").val().trim();
+    console.log(start)
+    rate = $("#employeeRate").val().trim();
+    database.ref().push({
     name: name,
     role: role,
     start: start,
     rate: rate,
     dateAdded: firebase.database.ServerValue.TIMESTAMP
-});
-
-
+    });
 });
 
 var today = new Date();
@@ -176,66 +145,51 @@ if(dd<10) {
 if(mm<10) {
     mm = '0'+mm
 } 
+
 console.log(today)
 
 currentTime = todayString.substring(15,21)
-
-
 currentMilitary = parseInt(todayString.substring(15,21).replace(":",""))
 
 console.log( "this is today "+currentMilitary)
 
-
 database.ref().on("child_added", function(snapshot) {
           
-            var sv = snapshot.val();
-            console.log(sv)
+  var sv = snapshot.val();
+  console.log(sv)
 
+  var trainName = sv.name;
+  var destination = sv.role;
+  var firstTrain = sv.start;
+  var trainFrequency = sv.rate;
+  var firstTrainClean = firstTrain.replace(":", "")
+  var firstTrainMilitary = parseInt(firstTrainClean)
+  var timeDif = Math.abs(firstTrainMilitary-currentMilitary)
+  var difHours = parseInt(timeDif.toString().slice(0,2))
+  var difMinutes = parseInt(timeDif.toString().slice(2,4))
+  var minutesSince = (difHours*12)+difMinutes
+  var timeUntil = minutesSince%trainFrequency          
+  var dataArray = [ sv.rate, sv.start, sv.role, sv.name, timeUntil, currentTime ]
+  
+  console.log(dataArray)
 
+  var dataTR = $("<tr> </tr>");
+  for (i=0; i<dataArray.length; i++) {
+    var instaData = $("<td> </td>")
+    
+    instaData.text(dataArray[i])
 
+    dataTR.prepend(instaData)
 
-            var trainName = sv.name;
-            var destination = sv.role;
-            var firstTrain = sv.start;
-            var trainFrequency = sv.rate;
-            var firstTrainClean = firstTrain.replace(":", "")
-            var firstTrainMilitary = parseInt(firstTrainClean)
-            var timeDif = Math.abs(firstTrainMilitary-currentMilitary)
-            var difHours = parseInt(timeDif.toString().slice(0,2))
-            var difMinutes = parseInt(timeDif.toString().slice(2,4))
-            var minutesSince = (difHours*12)+difMinutes
-            var timeUntil = minutesSince%trainFrequency
-            
-            
-            var dataArray = [ sv.rate, sv.start, sv.role, sv.name, timeUntil, currentTime ]
+  }
 
-            console.log(dataArray)
+  $(".appendData").append(dataTR)
+       
+}, function(errorObject) {
+  console.log("Errors handled: " + errorObject.code);
+  });
 
-            var dataTR = $("<tr> </tr>");
-
-
-
-            for (i=0; i<dataArray.length; i++) {
-
-                var instaData = $("<td> </td>")
-
-                instaData.text(dataArray[i])
-
-                dataTR.prepend(instaData)
-
-
-
-            }
-
-            $(".appendData").append(dataTR)
-
-         
-        }, function(errorObject) {
-            console.log("Errors handled: " + errorObject.code);
-        });
-
-    </script>
-
+  </script>
 </body>
 </html>
 
